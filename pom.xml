@@ -12,7 +12,8 @@
     <module>common-model-ms</module>
     <module>service-registry</module>
     <module>api-gateway</module>
-    <module>employee-service</module>
+    <module>users-service</module>
+    <module>common-model-mdb</module>
   </modules>
 
   <dependencyManagement>
