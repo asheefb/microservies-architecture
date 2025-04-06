@@ -27,4 +27,18 @@ public class AdditionalDetails {
     private Integer experienceYears;
 
     private List<String> certifications;
+
+    private Double salary;
+
+    @Field(value = "salary_type")
+    private String salaryType;
+
+    @Field(value = "bank_account_number")
+    private String bankAccountNumber;
+
+    @Field(value = "ifsc_code")
+    private String ifscCode;
+
+    @Field(value = "pf_number")
+    private String pfNumber;
 }
