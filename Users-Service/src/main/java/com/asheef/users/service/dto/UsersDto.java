@@ -29,7 +29,11 @@ public class UsersDto {
 
     private String addressLine2;
 
-    private String cityId;
+    private String city;
+
+    private String state;
+
+    private String country;
 
     private String pinCode;
 

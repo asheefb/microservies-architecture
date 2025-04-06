@@ -20,6 +20,9 @@ public class CityStateLocation {
     @Field(targetType = FieldType.OBJECT_ID)
     private String id;
 
+    @Field(value = "erp_id")
+    private Integer erpId;
+
     @Field(value = "country_name")
     private String countryName;
 
