@@ -52,5 +52,9 @@ public class Constants {
 
     public static final String ADDED_SUCCESS = "User Added Successfully!!";
 
+    public static final String COUNTRY_TYPE = "COUNTRY";
+
+    public static final String NO_DATA_FOUND = "No data found";
+
 
 }
