@@ -1,13 +1,17 @@
 package com.asheef.users.service.service_impl;
 
+import com.asheef.common_model_mdb.model.CityStateLocation;
 import com.asheef.common_model_mdb.model.employee.AddressInformation;
 import com.asheef.common_model_mdb.model.employee.UserModel;
 import com.asheef.common_model_mdb.model.utils.ErrorStructure;
 import com.asheef.common_model_mdb.model.utils.ResponseDTO;
 import com.asheef.common_model_mdb.repository.CityStateLocationRepository;
 import com.asheef.common_model_mdb.repository.UserModelRepository;
+import com.asheef.common_model_ms.model.Location;
 import com.asheef.common_model_ms.model.employee.Users;
+import com.asheef.common_model_ms.repository.LocationRepository;
 import com.asheef.users.service.constants.Constants;
+import com.asheef.users.service.dto.CityStateLocationDto;
 import com.asheef.users.service.dto.UsersDto;
 import com.asheef.users.service.service.UsersService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -30,9 +35,13 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     private final CityStateLocationRepository cityStateLocationRepository;
 
-    public UsersServiceImpl(UserModelRepository userModelRepository, CityStateLocationRepository cityStateLocationRepository) {
+    @Autowired
+    private final LocationRepository locationRepository;
+
+    public UsersServiceImpl(UserModelRepository userModelRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository) {
         this.userModelRepository = userModelRepository;
         this.cityStateLocationRepository = cityStateLocationRepository;
+        this.locationRepository = locationRepository;
     }
 
     @Override
@@ -146,5 +155,45 @@ public class UsersServiceImpl implements UsersService {
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         }
         return new ResponseEntity<>(response,httpStatus);
+    }
+
+    @Override
+    public String  addLocation(List<CityStateLocationDto> cityStateLocations) {
+
+        cityStateLocations.forEach(
+                cityStateLocationDto -> {
+                    CityStateLocation cityStateLocation = new CityStateLocation();
+                    Location location = new Location();
+
+                    cityStateLocation.setCountryName(cityStateLocationDto.getCountryName());
+                    location.setCountryName(cityStateLocationDto.getCountryName());
+
+                    cityStateLocation.setCountryCode(cityStateLocationDto.getCountryCode());
+                    location.setCountryCode(cityStateLocationDto.getCountryCode());
+
+                    cityStateLocation.setStateName(cityStateLocationDto.getStateName());
+                    location.setStateName(cityStateLocationDto.getStateName());
+
+                    cityStateLocation.setStateIsoCode(cityStateLocationDto.getStateIsoCode());
+                    location.setStateIsoCode(cityStateLocationDto.getStateIsoCode());
+
+                    cityStateLocation.setCityName(cityStateLocationDto.getCityName());
+                    location.setCityName(cityStateLocationDto.getCityName());
+
+                    cityStateLocation.setTimeZone(cityStateLocationDto.getTimeZone());
+                    location.setTimeZone(cityStateLocationDto.getTimeZone());
+
+                    cityStateLocation.setType(cityStateLocationDto.getType());
+                    location.setType(cityStateLocationDto.getType());
+
+                    Location save = locationRepository.save(location);
+
+                    cityStateLocation.setErpId(save.getId());
+
+                    cityStateLocationRepository.save(cityStateLocation);
+
+                }
+        );
+        return "Success";
     }
 }
