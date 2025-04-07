@@ -165,11 +165,8 @@ public class UsersServiceImpl implements UsersService {
                     CityStateLocation cityStateLocation = new CityStateLocation();
                     Location location = new Location();
 
-                    cityStateLocation.setCountryName(cityStateLocationDto.getCountryName());
-                    location.setCountryName(cityStateLocationDto.getCountryName());
-
-                    cityStateLocation.setCountryCode(cityStateLocationDto.getCountryCode());
-                    location.setCountryCode(cityStateLocationDto.getCountryCode());
+                    cityStateLocation.setCityName(cityStateLocationDto.getCityName());
+                    location.setCityName(cityStateLocationDto.getCityName());
 
                     cityStateLocation.setStateName(cityStateLocationDto.getStateName());
                     location.setStateName(cityStateLocationDto.getStateName());
@@ -177,8 +174,11 @@ public class UsersServiceImpl implements UsersService {
                     cityStateLocation.setStateIsoCode(cityStateLocationDto.getStateIsoCode());
                     location.setStateIsoCode(cityStateLocationDto.getStateIsoCode());
 
-                    cityStateLocation.setCityName(cityStateLocationDto.getCityName());
-                    location.setCityName(cityStateLocationDto.getCityName());
+                    cityStateLocation.setCountryCode(cityStateLocationDto.getCountryCode());
+                    location.setCountryCode(cityStateLocationDto.getCountryCode());
+
+                    cityStateLocation.setCountryName(cityStateLocationDto.getCountryName());
+                    location.setCountryName(cityStateLocationDto.getCountryName());
 
                     cityStateLocation.setTimeZone(cityStateLocationDto.getTimeZone());
                     location.setTimeZone(cityStateLocationDto.getTimeZone());
