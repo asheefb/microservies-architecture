@@ -62,5 +62,14 @@ public class Constants {
 
     public static final String FAILED = "Failed";
 
+    public static final String EMAIL_ALREADY_EXIST = "Email Already Exist";
+
+    public static final String PHONE_NUMBER_ALREADY_EXIST = "Phone Number Already Exist";
+
+    //update users
+    public static final String INVALID_ID_USER_NOT_FOUND = "Invalid id User Not Found";
+
+    public static final String INVALID_USER_ID_USER_NOT_FOUND = "Invalid userId User Not Found";
+
 
 }
