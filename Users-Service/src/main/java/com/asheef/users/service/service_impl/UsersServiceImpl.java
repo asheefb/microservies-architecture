@@ -23,10 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -85,6 +82,9 @@ public class UsersServiceImpl implements UsersService {
             if (usersDto.getEmail() == null || usersDto.getEmail().isEmpty() || !Constants.EMAIL_PATTERN.matcher(usersDto.getEmail()).matches()){
                 errorStructure = new ErrorStructure(usersDto.getEmail(),Constants.INVALID_EMAIL,Constants.EMAIL);
                 errors.add(errorStructure);
+            } else if (usersDto.getEmail().equals(usersRepository.findByEmail(usersDto.getEmail()).get().getEmail())) {
+                errorStructure = new ErrorStructure(usersDto.getEmail(),Constants.EMAIL_ALREADY_EXIST,Constants.EMAIL);
+                errors.add(errorStructure);
             } else {
                 user.setEmail(usersDto.getEmail());
                 userModel.setEmail(usersDto.getEmail());
@@ -93,6 +93,10 @@ public class UsersServiceImpl implements UsersService {
             if (usersDto.getPhoneNumber() == null || usersDto.getPhoneNumber().length() != 10){
                 errorStructure = new ErrorStructure(usersDto.getPhoneNumber(), Constants.INVALID_PHONE_NUMBER,Constants.PHONE_NUMBER);
                 errors.add(errorStructure);
+            } else if (usersDto.getPhoneNumber().equals(usersRepository.findByPhoneNumber(usersDto.getPhoneNumber()).get().getPhoneNumber())) {
+                errorStructure = new ErrorStructure(usersDto.getPhoneNumber(),Constants.PHONE_NUMBER_ALREADY_EXIST,Constants.PHONE_NUMBER);
+                errors.add(errorStructure);
+
             } else {
                 user.setPhoneNumber(usersDto.getPhoneNumber());
                 userModel.setPhoneNumber(usersDto.getPhoneNumber());
@@ -146,7 +150,7 @@ public class UsersServiceImpl implements UsersService {
             } else {
                 var countryDoc = cityStateLocationRepository.findById(new ObjectId(usersDto.getCountry()))
                         .orElseThrow((()->new NoSuchElementException("Country Not found")));
-                user.setStateId(countryDoc.getErpId());
+                user.setCountryId(countryDoc.getErpId());
                 addressInformation.setState(usersDto.getCountry());
             }
 
@@ -232,6 +236,39 @@ public class UsersServiceImpl implements UsersService {
 
     @Override
     public ResponseEntity<ResponseDTO> updateUser(UsersUpdateDto usersUpdateDto) {
+
+        ResponseDTO response;
+        HttpStatus httpStatus;
+
+        ErrorStructure errorStructure;
+        var errors = new ArrayList<>();
+
+        UserModel userModel = userModelRepository.findById(usersUpdateDto.getId())
+                .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_ID_USER_NOT_FOUND));
+
+        Users erpUser = usersRepository.findById(userModel.getUserId())
+                .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_USER_ID_USER_NOT_FOUND));
+
+        try {
+            if (usersUpdateDto.getFirstName() == null || usersUpdateDto.getFirstName().isEmpty()){
+                errorStructure = new ErrorStructure(usersUpdateDto.getFirstName(), Constants.FIRST_NAME_SHOULD_NOT_BE_EMPTY,Constants.FIRST_NAME);
+                errors.add(errorStructure);
+            } else if (usersUpdateDto.getFirstName().length() < Constants.MIN_VALUE){
+                errorStructure = new ErrorStructure(usersUpdateDto.getFirstName(),Constants.FIRST_NAME_LESS_MESSAGE,Constants.FIRST_NAME);
+                errors.add(errorStructure);
+            } else if (usersUpdateDto.getFirstName().equals(userModelRepository.findByName(usersUpdateDto.getFirstName()).get().getFirstName())) {
+                errorStructure = new ErrorStructure(usersUpdateDto.getFirstName(),Constants.DUPLICATE_NAME,Constants.FIRST_NAME);
+                errors.add(errorStructure);
+            } else if (!usersUpdateDto.getFirstName().equals(userModel.getFirstName())) {
+                userModel.setFirstName(usersUpdateDto.getFirstName());
+                erpUser.setFirstName(usersUpdateDto.getFirstName());
+            }
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return null;
     }
 }

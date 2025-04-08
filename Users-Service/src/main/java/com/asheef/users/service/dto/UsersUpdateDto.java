@@ -13,6 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class UsersUpdateDto {
 
+    private String id;
+
     private String firstName;
 
     private String lastName;
