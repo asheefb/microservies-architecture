@@ -13,4 +13,10 @@ public interface CityStateLocationRepository extends MongoRepository<CityStateLo
 
     @Query("{type:?0}")
     List<CityStateLocation> findByType(String type);
+
+    @Query("{type:?0 , countryCode:?1 }")
+    List<CityStateLocation> findByTypeAndCountryCode(String type,String countryCode);
+
+    @Query("{type:?0,stateIsoCode:?1}")
+    List<CityStateLocation> findByTypeAndStateIsoCode(String type , String stateIsoCode);
 }

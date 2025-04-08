@@ -68,5 +68,8 @@ public class Users {
     @Column(name = "updated_by")
     private Integer updatedBy;
 
-    private Long salary;
+    @Column(name = "is_active")
+    private boolean active;
+
+    private String status;
 }

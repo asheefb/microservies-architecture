@@ -11,7 +11,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsersDto {
+public class UsersUpdateDto {
 
     private String firstName;
 

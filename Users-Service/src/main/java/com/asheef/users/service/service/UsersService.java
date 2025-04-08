@@ -3,6 +3,7 @@ package com.asheef.users.service.service;
 import com.asheef.common_model_mdb.model.utils.ResponseDTO;
 import com.asheef.users.service.dto.CityStateLocationDto;
 import com.asheef.users.service.dto.UsersDto;
+import com.asheef.users.service.dto.UsersUpdateDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -13,5 +14,6 @@ public interface UsersService {
 
     String addLocation(List<CityStateLocationDto> cityStateLocation);
 
+    public ResponseEntity<ResponseDTO> updateUser(UsersUpdateDto usersUpdateDto);
 
 }

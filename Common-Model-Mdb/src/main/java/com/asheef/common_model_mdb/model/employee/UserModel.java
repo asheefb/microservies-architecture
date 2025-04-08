@@ -44,14 +44,16 @@ public class UserModel {
     @Field(value = "address_info")
     private AddressInformation addressInformation;
 
+    @Field(value = "is_active")
+    private boolean active;
+
+    private String status;
+
     @Field(value = "created_at")
     private Date createdAt;
 
     @Field(value = "updated_at")
     private Date updatedAt;
-
-    @Field(value = "salary_id",targetType = FieldType.OBJECT_ID)
-    private String salaryId;
 
     @Field(value = "additional_details")
     private AdditionalDetails additionalDetails;

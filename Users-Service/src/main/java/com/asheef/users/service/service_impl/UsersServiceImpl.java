@@ -10,9 +10,11 @@ import com.asheef.common_model_mdb.repository.UserModelRepository;
 import com.asheef.common_model_ms.model.Location;
 import com.asheef.common_model_ms.model.employee.Users;
 import com.asheef.common_model_ms.repository.LocationRepository;
+import com.asheef.common_model_ms.repository.UsersRepository;
 import com.asheef.users.service.constants.Constants;
 import com.asheef.users.service.dto.CityStateLocationDto;
 import com.asheef.users.service.dto.UsersDto;
+import com.asheef.users.service.dto.UsersUpdateDto;
 import com.asheef.users.service.service.UsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -22,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -33,13 +36,17 @@ public class UsersServiceImpl implements UsersService {
     private final UserModelRepository userModelRepository;
 
     @Autowired
+    private final UsersRepository usersRepository;
+
+    @Autowired
     private final CityStateLocationRepository cityStateLocationRepository;
 
     @Autowired
     private final LocationRepository locationRepository;
 
-    public UsersServiceImpl(UserModelRepository userModelRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository) {
+    public UsersServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository) {
         this.userModelRepository = userModelRepository;
+        this.usersRepository = usersRepository;
         this.cityStateLocationRepository = cityStateLocationRepository;
         this.locationRepository = locationRepository;
     }
@@ -146,6 +153,32 @@ public class UsersServiceImpl implements UsersService {
             user.setPinCode(Integer.valueOf(usersDto.getPinCode()));
             addressInformation.setPinCode(Integer.valueOf(usersDto.getPinCode()));
 
+            userModel.setAddressInformation(addressInformation);
+
+            user.setActive(true);
+            userModel.setActive(true);
+
+            user.setStatus(Constants.ACTIVE);
+            user.setStatus(Constants.ACTIVE);
+
+            user.setCreatedAt(new Date());
+            userModel.setCreatedAt(new Date());
+
+            user.setUpdatedAt(new Date());
+            userModel.setUpdatedAt(new Date());
+
+            if (!errors.isEmpty()){
+                response = new ResponseDTO(Boolean.FALSE,errors,HttpStatus.BAD_REQUEST.value(), Constants.FAILED);
+                httpStatus = HttpStatus.BAD_REQUEST;
+                return new ResponseEntity<>(response,httpStatus);
+            }
+
+            Users erpUser = usersRepository.save(user);
+
+            userModel.setUserId(erpUser.getId());
+
+            userModelRepository.save(userModel);
+
             response = new ResponseDTO(Boolean.TRUE,Constants.ADDED_SUCCESS,HttpStatus.OK.value(),Constants.SUCCESS);
             httpStatus = HttpStatus.OK;
 
@@ -195,5 +228,10 @@ public class UsersServiceImpl implements UsersService {
                 }
         );
         return "Success";
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> updateUser(UsersUpdateDto usersUpdateDto) {
+        return null;
     }
 }

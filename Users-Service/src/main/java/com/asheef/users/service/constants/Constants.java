@@ -56,5 +56,11 @@ public class Constants {
 
     public static final String NO_DATA_FOUND = "No data found";
 
+    public static final String UNABLE_TO_FETCH_DATA = "Unable to fetch data";
+
+    public static final String ACTIVE = "Active";
+
+    public static final String FAILED = "Failed";
+
 
 }
