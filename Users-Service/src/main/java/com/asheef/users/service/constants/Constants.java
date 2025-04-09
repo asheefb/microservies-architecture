@@ -76,4 +76,5 @@ public class Constants {
     public static final String USER = "User";
 
 
+    public static final String ADDRESS_LINE_2 = "Address Line 2";
 }
