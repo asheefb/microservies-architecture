@@ -13,12 +13,7 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(value = "salary")
 public class Salary {
-
-    @Id
-    @Field(targetType = FieldType.OBJECT_ID)
-    private String id;
 
     private Double salary;
 
