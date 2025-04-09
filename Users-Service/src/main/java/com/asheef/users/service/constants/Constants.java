@@ -77,4 +77,10 @@ public class Constants {
 
 
     public static final String ADDRESS_LINE_2 = "Address Line 2";
+
+    public static final String PIN_CODE = "Pin Code";
+
+    public static final String UNABLE_TO_UPDATE_USER = "Unable to update user";
+
+    public static final String UPDATED_SUCCESS = "Updated Successfully!!";
 }
