@@ -164,7 +164,7 @@ public class UsersServiceImpl implements UsersService {
             userModel.setActive(true);
 
             user.setStatus(Constants.ACTIVE);
-            user.setStatus(Constants.ACTIVE);
+            userModel.setStatus(Constants.ACTIVE);
 
             user.setCreatedAt(new Date());
             userModel.setCreatedAt(new Date());
@@ -313,6 +313,69 @@ public class UsersServiceImpl implements UsersService {
                 erpUser.setAddressLine1(usersUpdateDto.getAddressLine1());
                 addressInformation.setAddressLine1(usersUpdateDto.getAddressLine1());
             }
+
+            if (usersUpdateDto.getAddressLine2() == null || !usersUpdateDto.getAddressLine2().equals(userModel.getAddressInformation().getAddressLine2())) {
+
+                from = userModel.getAddressInformation().getAddressLine2() != null ? userModel.getAddressInformation().getAddressLine2() : "";
+                to = usersUpdateDto.getAddressLine2() != null ? usersUpdateDto.getAddressLine2() :"";
+
+                UsersAudit auditHistory = createAuditHistory(Constants.ADDRESS_LINE_2, Constants.USER, from, to, updatedBy);
+                auditList.add(auditHistory);
+
+                erpUser.setAddressLine2(usersUpdateDto.getAddressLine2());
+                addressInformation.setAddressLine2(usersUpdateDto.getAddressLine2());
+            }
+
+            if (usersUpdateDto.getCity() == null || usersUpdateDto.getCity().isEmpty()) {
+                errorStructure = new ErrorStructure(usersUpdateDto.getCity(), Constants.CITY_SHOULD_NOT_BE_EMPTY, Constants.CITY);
+                errors.add(errorStructure);
+            } else if (!usersUpdateDto.getCity().equals(userModel.getAddressInformation().getCity())){
+
+                var newCityDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getCity()))
+                        .orElseThrow(() -> new NoSuchElementException("City not found"));
+
+
+
+                erpUser.setCityId(newCityDoc.getErpId());
+                addressInformation.setCity(usersUpdateDto.getCity());
+            }
+
+            if (usersUpdateDto.getState() == null || usersUpdateDto.getState().isEmpty()) {
+                errorStructure = new ErrorStructure(usersUpdateDto.getState(), Constants.STATE_SHOULD_NOT_BE_EMPTY, Constants.STATE);
+                errors.add(errorStructure);
+            } else {
+                var stateDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getState()))
+                        .orElseThrow((() -> new NoSuchElementException("State Not found")));
+                erpUser.setStateId(stateDoc.getErpId());
+                addressInformation.setState(usersUpdateDto.getState());
+            }
+
+            if (usersUpdateDto.getCountry() == null || usersUpdateDto.getCountry().isEmpty()) {
+                errorStructure = new ErrorStructure(usersUpdateDto.getCountry(), Constants.COUNTRY_SHOULD_NOT_BE_EMPTY, Constants.COUNTRY);
+                errors.add(errorStructure);
+            } else {
+                var countryDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getCountry()))
+                        .orElseThrow((() -> new NoSuchElementException("Country Not found")));
+                erpUser.setCountryId(countryDoc.getErpId());
+                addressInformation.setState(usersUpdateDto.getCountry());
+            }
+
+            erpUser.setPinCode(Integer.valueOf(usersUpdateDto.getPinCode()));
+            addressInformation.setPinCode(Integer.valueOf(usersUpdateDto.getPinCode()));
+
+            userModel.setAddressInformation(addressInformation);
+
+            erpUser.setActive(true);
+            userModel.setActive(true);
+
+            erpUser.setStatus(Constants.ACTIVE);
+            userModel.setStatus(Constants.ACTIVE);
+
+            erpUser.setCreatedAt(new Date());
+            userModel.setCreatedAt(new Date());
+
+            erpUser.setUpdatedAt(new Date());
+            userModel.setUpdatedAt(new Date());
 
 
         } catch (Exception e) {
