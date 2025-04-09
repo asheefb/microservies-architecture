@@ -3,6 +3,7 @@ package com.asheef.users.service.controller;
 import com.asheef.common_model_mdb.model.utils.ResponseDTO;
 import com.asheef.users.service.dto.CityStateLocationDto;
 import com.asheef.users.service.dto.UsersDto;
+import com.asheef.users.service.dto.UsersUpdateDto;
 import com.asheef.users.service.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,11 @@ public class UsersController {
     @PostMapping("add/location/data")
     public String  addLocation(@RequestBody List<CityStateLocationDto> cityStateLocation){
         return usersService.addLocation(cityStateLocation);
+    }
+
+    @PutMapping("update")
+    public ResponseEntity<ResponseDTO> updateUser(UsersUpdateDto usersUpdateDto){
+        return usersService.updateUser(usersUpdateDto);
     }
 
 
