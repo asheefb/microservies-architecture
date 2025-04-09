@@ -37,6 +37,11 @@ public class UsersController {
         return usersService.updateUser(usersUpdateDto);
     }
 
+    @PostMapping("add/additional-details")
+    public ResponseEntity<ResponseDTO> addAddtionalDetails(){
+
+    }
+
 
 
 }

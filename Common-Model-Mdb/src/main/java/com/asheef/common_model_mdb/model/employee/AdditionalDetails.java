@@ -16,29 +16,19 @@ import java.util.List;
 @NoArgsConstructor
 public class AdditionalDetails {
 
-    @Field(targetType = FieldType.OBJECT_ID,value = "job_id")
-    private String jobId;
+    @Field(value = "job_details")
+    private JobModel jobDetails;
 
     private List<String> skills;
 
-    private String education;
+    @Field(value = "education_details")
+    private EducationDetails educationDetails;
 
-    @Column(name = "experience_years")
+    @Field(value = "experience_years")
     private Integer experienceYears;
 
     private List<String> certifications;
 
-    private Double salary;
-
-    @Field(value = "salary_type")
-    private String salaryType;
-
-    @Field(value = "bank_account_number")
-    private String bankAccountNumber;
-
-    @Field(value = "ifsc_code")
-    private String ifscCode;
-
-    @Field(value = "pf_number")
-    private String pfNumber;
+    @Field(value = "salary_details")
+    private Salary salaryDetails;
 }
