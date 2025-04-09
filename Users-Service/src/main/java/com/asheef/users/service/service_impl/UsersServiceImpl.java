@@ -302,9 +302,9 @@ public class UsersServiceImpl implements UsersService {
             if (usersUpdateDto.getAddressLine1() == null || usersUpdateDto.getAddressLine1().length() < Constants.MIN_VALUE) {
                 errorStructure = new ErrorStructure(usersUpdateDto.getAddressLine1(), Constants.ADDRESS_LINE_1_ERROR_MESSAGE, Constants.ADDRESS_LINE_1);
                 errors.add(errorStructure);
-            } else if (!usersUpdateDto.getAddressLine1().equals(userModel.getAddressInformation().getAddressLine1())){
+            } else if (!usersUpdateDto.getAddressLine1().equals(addressInformation.getAddressLine1())){
 
-                from = userModel.getAddressInformation().getAddressLine1();
+                from = addressInformation.getAddressLine1();
                 to = usersUpdateDto.getAddressLine1();
 
                 UsersAudit auditHistory = createAuditHistory(Constants.ADDRESS_LINE_1, Constants.USER, from, to, updatedBy);
@@ -316,7 +316,7 @@ public class UsersServiceImpl implements UsersService {
 
             if (usersUpdateDto.getAddressLine2() == null || !usersUpdateDto.getAddressLine2().equals(userModel.getAddressInformation().getAddressLine2())) {
 
-                from = userModel.getAddressInformation().getAddressLine2() != null ? userModel.getAddressInformation().getAddressLine2() : "";
+                from = addressInformation.getAddressLine2() != null ? addressInformation.getAddressLine2() : "";
                 to = usersUpdateDto.getAddressLine2() != null ? usersUpdateDto.getAddressLine2() :"";
 
                 UsersAudit auditHistory = createAuditHistory(Constants.ADDRESS_LINE_2, Constants.USER, from, to, updatedBy);
@@ -329,12 +329,18 @@ public class UsersServiceImpl implements UsersService {
             if (usersUpdateDto.getCity() == null || usersUpdateDto.getCity().isEmpty()) {
                 errorStructure = new ErrorStructure(usersUpdateDto.getCity(), Constants.CITY_SHOULD_NOT_BE_EMPTY, Constants.CITY);
                 errors.add(errorStructure);
-            } else if (!usersUpdateDto.getCity().equals(userModel.getAddressInformation().getCity())){
+            } else if (!usersUpdateDto.getCity().equals(addressInformation.getCity())){
 
                 var newCityDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getCity()))
                         .orElseThrow(() -> new NoSuchElementException("City not found"));
 
+                var oldCityDoc = cityStateLocationRepository.findById(new ObjectId(addressInformation.getCity()));
 
+                from = oldCityDoc.get().getCityName();
+                to = newCityDoc.getCityName();
+
+                UsersAudit auditHistory = createAuditHistory(Constants.CITY, Constants.USER, from, to, updatedBy);
+                auditList.add(auditHistory);
 
                 erpUser.setCityId(newCityDoc.getErpId());
                 addressInformation.setCity(usersUpdateDto.getCity());
@@ -343,46 +349,79 @@ public class UsersServiceImpl implements UsersService {
             if (usersUpdateDto.getState() == null || usersUpdateDto.getState().isEmpty()) {
                 errorStructure = new ErrorStructure(usersUpdateDto.getState(), Constants.STATE_SHOULD_NOT_BE_EMPTY, Constants.STATE);
                 errors.add(errorStructure);
-            } else {
-                var stateDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getState()))
+            } else if (!usersUpdateDto.getState().equals(addressInformation.getState())){
+                var newStateDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getState()))
                         .orElseThrow((() -> new NoSuchElementException("State Not found")));
-                erpUser.setStateId(stateDoc.getErpId());
+
+                var oldStateDoc = cityStateLocationRepository.findById(new ObjectId(addressInformation.getState()));
+
+                from = oldStateDoc.get().getStateName();
+                to = newStateDoc.getStateName();
+
+                UsersAudit auditHistory = createAuditHistory(Constants.STATE, Constants.USER, from, to, updatedBy);
+                auditList.add(auditHistory);
+
+                erpUser.setStateId(newStateDoc.getErpId());
                 addressInformation.setState(usersUpdateDto.getState());
             }
 
             if (usersUpdateDto.getCountry() == null || usersUpdateDto.getCountry().isEmpty()) {
                 errorStructure = new ErrorStructure(usersUpdateDto.getCountry(), Constants.COUNTRY_SHOULD_NOT_BE_EMPTY, Constants.COUNTRY);
                 errors.add(errorStructure);
-            } else {
-                var countryDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getCountry()))
+            } else if (!usersUpdateDto.getCountry().equals(addressInformation.getCountry())){
+                var newCountryDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getCountry()))
                         .orElseThrow((() -> new NoSuchElementException("Country Not found")));
-                erpUser.setCountryId(countryDoc.getErpId());
+
+                var oldCountryCode = cityStateLocationRepository.findById(new ObjectId(addressInformation.getCountry()));
+
+                from = oldCountryCode.get().getCountryName();
+                to = newCountryDoc.getCountryName();
+
+                UsersAudit auditHistory = createAuditHistory(Constants.COUNTRY, Constants.USER, from, to, updatedBy);
+                auditList.add(auditHistory);
+
+                erpUser.setCountryId(newCountryDoc.getErpId());
                 addressInformation.setState(usersUpdateDto.getCountry());
             }
 
-            erpUser.setPinCode(Integer.valueOf(usersUpdateDto.getPinCode()));
-            addressInformation.setPinCode(Integer.valueOf(usersUpdateDto.getPinCode()));
+            if (!Integer.valueOf(usersUpdateDto.getPinCode()).equals(addressInformation.getPinCode())){
+
+                from = addressInformation.getPinCode() != null ? String.valueOf(addressInformation.getPinCode()) : "";
+                to = usersUpdateDto.getPinCode() != null ? usersUpdateDto.getPinCode() : "";
+
+                UsersAudit auditHistory = createAuditHistory(Constants.PIN_CODE, Constants.USER, from, to, updatedBy);
+                auditList.add(auditHistory);
+
+                erpUser.setPinCode(Integer.valueOf(usersUpdateDto.getPinCode()));
+                addressInformation.setPinCode(Integer.valueOf(usersUpdateDto.getPinCode()));
+            }
 
             userModel.setAddressInformation(addressInformation);
-
-            erpUser.setActive(true);
-            userModel.setActive(true);
-
-            erpUser.setStatus(Constants.ACTIVE);
-            userModel.setStatus(Constants.ACTIVE);
-
-            erpUser.setCreatedAt(new Date());
-            userModel.setCreatedAt(new Date());
 
             erpUser.setUpdatedAt(new Date());
             userModel.setUpdatedAt(new Date());
 
+            if (!errors.isEmpty()){
+                response = new ResponseDTO(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),Constants.UNABLE_TO_UPDATE_USER);
+                httpStatus = HttpStatus.BAD_REQUEST;
+                return new ResponseEntity<>(response,httpStatus);
+            }
+
+            usersRepository.save(erpUser);
+
+            userModelRepository.save(userModel);
+
+            response = new ResponseDTO(Boolean.TRUE,Constants.UPDATED_SUCCESS,HttpStatus.OK.value(),Constants.SUCCESS);
+            httpStatus = HttpStatus.OK;
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error(Constants.UNABLE_TO_UPDATE_USER,e);
+
+            response = new ResponseDTO(Boolean.FALSE,HttpStatus.UNPROCESSABLE_ENTITY.value(),Constants.UNABLE_TO_UPDATE_USER);
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         }
 
-        return null;
+        return new ResponseEntity<>(response,httpStatus);
     }
 
     @Override
