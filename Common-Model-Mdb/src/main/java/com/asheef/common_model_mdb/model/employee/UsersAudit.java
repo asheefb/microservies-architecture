@@ -25,6 +25,10 @@ public class UsersAudit {
     @Field(value = "user_id")
     private Integer userId;
 
+    private String param;
+
+    private String type;
+
     private String from;
 
     private String to;

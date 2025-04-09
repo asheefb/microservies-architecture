@@ -71,5 +71,9 @@ public class Constants {
 
     public static final String INVALID_USER_ID_USER_NOT_FOUND = "Invalid userId User Not Found";
 
+    public static final String LAST_NAME = "Last Name";
+
+    public static final String USER = "User";
+
 
 }
