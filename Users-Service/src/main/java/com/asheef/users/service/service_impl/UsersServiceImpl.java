@@ -1,7 +1,6 @@
 package com.asheef.users.service.service_impl;
 
 import com.asheef.common_model_mdb.model.CityStateLocation;
-import com.asheef.common_model_mdb.model.employee.AdditionalDetails;
 import com.asheef.common_model_mdb.model.employee.AddressInformation;
 import com.asheef.common_model_mdb.model.employee.UserModel;
 import com.asheef.common_model_mdb.model.employee.UsersAudit;
@@ -464,7 +463,7 @@ public class UsersServiceImpl implements UsersService {
         return "Success";
     }
 
-    private UsersAudit createAuditHistory(String param,String type, String from, String to, String updatedBy) {
+    protected UsersAudit createAuditHistory(String param,String type, String from, String to, String updatedBy) {
 
         UsersAudit usersAudit = new UsersAudit();
 
