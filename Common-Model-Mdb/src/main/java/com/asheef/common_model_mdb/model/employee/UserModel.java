@@ -25,6 +25,9 @@ public class UserModel {
     @Field(value = "user_id")
     private Integer userId;
 
+    @Field(value = "salary_id")
+    private Integer salaryId;
+
     @Field(value = "first_name")
     private String firstName;
 

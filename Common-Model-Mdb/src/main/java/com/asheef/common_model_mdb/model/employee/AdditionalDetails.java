@@ -27,6 +27,4 @@ public class AdditionalDetails {
 
     private List<String> certifications;
 
-//    @Field(value = "salary_details")
-//    private Salary salaryDetails;
 }

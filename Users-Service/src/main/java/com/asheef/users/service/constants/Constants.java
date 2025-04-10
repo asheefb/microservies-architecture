@@ -103,4 +103,21 @@ public class Constants {
     public static final String SALARY_MESSAGE = "Salary should not be Empty";
 
     public static final String SALARY = "salary";
+
+    public static final String BANK_NUMBER = "bankAccountNumber";
+
+    public static final String BANK_NUMBER_MESSAGE = "Bank number should not be empty";
+
+    public static final String IFSC_CODE_SHOULD_NOT_BE_EMPTY = "IFSC code should not be Empty";
+
+    public static final String IFSC_CODE = "ifscCode";
+
+    public static final String INVALID_IFSC = "Ifsc Code is not valid";
+    public static final Object ADDITIONAL_DETAILS_ADDED = "Additional Details added Successfully!!";
+
+    public static String BANK_NUMBER_MESSAGE_MIN_LENGTH = "Account number should not be less than 9 digits";
+
+    public static String IFSC_REGEX = "^[A-Z]{4}0[A-Z0-9]{6}$";
+
+    public static Pattern PATTERN_IFSC = Pattern.compile(IFSC_REGEX);
 }

@@ -40,4 +40,6 @@ public class AdditionalDetailsDto {
 
     private String pfNumber;
 
+    private String departmentId;
+
 }
