@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @Setter
@@ -13,11 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 public class AdditionalDetailsDto {
 
-    private String departmentId;
+    private String id;
 
     private String designation;
 
-    private String joiningDate;
+    private Date joiningDate;
 
     private String employmentType;
 

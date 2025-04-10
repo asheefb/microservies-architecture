@@ -15,34 +15,37 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(value = "users_audit")
-public class UsersAudit {
+@Document("department")
+public class Department {
 
     @Id
     @Field(targetType = FieldType.OBJECT_ID)
     private String id;
 
-    @Field(value = "user_id")
-    private Integer userId;
+    @Field("department_id")
+    private Integer departmentId;
 
-    private String param;
+    @Field("department_name")
+    private String departmentName;
 
-    private String type;
+    @Field("department_code")
+    private String departmentCode;
 
-    private String from;
+    @Field("description")
+    private String description;
 
-    private String to;
+    @Field("is_active")
+    private boolean active;
 
-    @Field(targetType = FieldType.OBJECT_ID,value = "created_by")
+    @Field("created_by")
     private String createdBy;
 
-    @Field(targetType = FieldType.OBJECT_ID,value = "updated_by")
+    @Field("updated_by")
     private String updatedBy;
 
-    @Field(value = "created_at")
+    @Field("created_at")
     private Date createdAt;
 
-    @Field(value = "updated_at")
+    @Field("updated_at")
     private Date updatedAt;
-
 }

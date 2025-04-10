@@ -14,9 +14,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class JobModel {
 
-    @Field(value = "department_id")
-    private String departmentId;
-
     private String designation;
 
     @Field(value = "joining_date")
@@ -25,5 +22,4 @@ public class JobModel {
     @Field(value = "employment_type")
     private String  employmentType;
 
-    private String status;
 }

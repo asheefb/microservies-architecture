@@ -1,18 +1,18 @@
 package com.asheef.users.service.service_impl;
 
 import com.asheef.common_model_mdb.model.CityStateLocation;
-import com.asheef.common_model_mdb.model.employee.AddressInformation;
-import com.asheef.common_model_mdb.model.employee.UserModel;
-import com.asheef.common_model_mdb.model.employee.UsersAudit;
+import com.asheef.common_model_mdb.model.employee.*;
 import com.asheef.common_model_mdb.model.utils.ErrorStructure;
 import com.asheef.common_model_mdb.model.utils.ResponseDTO;
 import com.asheef.common_model_mdb.repository.CityStateLocationRepository;
 import com.asheef.common_model_mdb.repository.UserModelRepository;
 import com.asheef.common_model_ms.model.Location;
+import com.asheef.common_model_ms.model.employee.Salary;
 import com.asheef.common_model_ms.model.employee.Users;
 import com.asheef.common_model_ms.repository.LocationRepository;
 import com.asheef.common_model_ms.repository.UsersRepository;
 import com.asheef.users.service.constants.Constants;
+import com.asheef.users.service.dto.AdditionalDetailsDto;
 import com.asheef.users.service.dto.CityStateLocationDto;
 import com.asheef.users.service.dto.UsersDto;
 import com.asheef.users.service.dto.UsersUpdateDto;
@@ -421,6 +421,80 @@ public class UsersServiceImpl implements UsersService {
         }
 
         return new ResponseEntity<>(response,httpStatus);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> addAdditionalDetails(AdditionalDetailsDto additionalDetailsDto) {
+
+        ResponseDTO response;
+        HttpStatus httpStatus;
+
+        try {
+
+            ErrorStructure errorStructure;
+            var errors = new ArrayList<>();
+
+
+            UserModel userModel = userModelRepository.findById(additionalDetailsDto.getId())
+                    .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_ID_USER_NOT_FOUND));
+
+            Users erpUser = usersRepository.findById(userModel.getUserId()).get();
+
+            Salary salary = new Salary();
+
+            AdditionalDetails additionalDetails = userModel.getAdditionalDetails();
+
+            if (additionalDetails == null){
+                additionalDetails = new AdditionalDetails();
+            }
+
+            JobModel jobModel = new JobModel();
+
+            if (additionalDetailsDto.getDesignation() == null || additionalDetailsDto.getDesignation().isEmpty()){
+                errorStructure = new ErrorStructure(additionalDetailsDto.getDesignation(), Constants.DESIGNATION_SHOULD_NOT_BE_EMPTY,Constants.DESIGNATION);
+                errors.add(errorStructure);
+            } else {
+                jobModel.setDesignation(additionalDetailsDto.getDesignation());
+            }
+
+            if (additionalDetailsDto.getJoiningDate() == null || String.valueOf(additionalDetailsDto.getJoiningDate()).isEmpty()){
+                errorStructure = new ErrorStructure(String.valueOf(additionalDetailsDto.getJoiningDate()), Constants.JOINING_DATE_SHOULD_NOT_BE_EMPTY,Constants.JOINING_DATE);
+                errors.add(errorStructure);
+            } else {
+                jobModel.setJoiningDate(additionalDetailsDto.getJoiningDate());
+            }
+
+            if (additionalDetailsDto.getEmploymentType() == null || additionalDetailsDto.getEmploymentType().isEmpty()){
+                errorStructure = new ErrorStructure(additionalDetailsDto.getEmploymentType(),Constants.EMPLOYEE_TYPE_SHOULD_NOT_BE_EMPTY,Constants.EMPLOYEE_TYPE);
+                errors.add(errorStructure);
+            } else {
+                jobModel.setEmploymentType(additionalDetailsDto.getEmploymentType());
+            }
+
+            additionalDetails.setJobDetails(jobModel);
+
+            if (additionalDetailsDto.getSkills() == null || additionalDetailsDto.getSkills().isEmpty()){
+                errorStructure = new ErrorStructure(List.of().toString(),Constants.SKILLS_SHOULD_NOT_BE_EMPTY,Constants.SKILLS);
+                errors.add(errorStructure);
+            } else {
+                additionalDetails.setSkills(additionalDetailsDto.getSkills());
+            }
+
+            additionalDetails.setExperienceYears(Integer.valueOf(additionalDetailsDto.getExperienceYears()));
+
+            additionalDetails.setCertifications(additionalDetailsDto.getCertifications());
+
+            if (additionalDetailsDto.getSalary() == null || additionalDetailsDto.getSalary().isEmpty()){
+                errorStructure = new ErrorStructure(additionalDetailsDto.getSalary(), Constants.SALARY_MESSAGE,Constants.SALARY);
+                errors.add(errorStructure);
+            } else {
+                salary.setSalary(Double.valueOf(additionalDetailsDto.getSalary()));
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return null;
     }
 
     @Override
