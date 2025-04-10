@@ -10,6 +10,7 @@ import com.asheef.common_model_ms.model.Location;
 import com.asheef.common_model_ms.model.employee.Salary;
 import com.asheef.common_model_ms.model.employee.Users;
 import com.asheef.common_model_ms.repository.LocationRepository;
+import com.asheef.common_model_ms.repository.SalaryRepository;
 import com.asheef.common_model_ms.repository.UsersRepository;
 import com.asheef.users.service.constants.Constants;
 import com.asheef.users.service.dto.AdditionalDetailsDto;
@@ -42,11 +43,15 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     private final LocationRepository locationRepository;
 
-    public UsersServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository) {
+    @Autowired
+    private final SalaryRepository salaryRepository;
+
+    public UsersServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository, SalaryRepository salaryRepository) {
         this.userModelRepository = userModelRepository;
         this.usersRepository = usersRepository;
         this.cityStateLocationRepository = cityStateLocationRepository;
         this.locationRepository = locationRepository;
+        this.salaryRepository = salaryRepository;
     }
 
     @Override
@@ -301,7 +306,7 @@ public class UsersServiceImpl implements UsersService {
             if (usersUpdateDto.getAddressLine1() == null || usersUpdateDto.getAddressLine1().length() < Constants.MIN_VALUE) {
                 errorStructure = new ErrorStructure(usersUpdateDto.getAddressLine1(), Constants.ADDRESS_LINE_1_ERROR_MESSAGE, Constants.ADDRESS_LINE_1);
                 errors.add(errorStructure);
-            } else if (!usersUpdateDto.getAddressLine1().equals(addressInformation.getAddressLine1())){
+            } else if (!usersUpdateDto.getAddressLine1().equals(addressInformation.getAddressLine1())) {
 
                 from = addressInformation.getAddressLine1();
                 to = usersUpdateDto.getAddressLine1();
@@ -316,7 +321,7 @@ public class UsersServiceImpl implements UsersService {
             if (usersUpdateDto.getAddressLine2() == null || !usersUpdateDto.getAddressLine2().equals(userModel.getAddressInformation().getAddressLine2())) {
 
                 from = addressInformation.getAddressLine2() != null ? addressInformation.getAddressLine2() : "";
-                to = usersUpdateDto.getAddressLine2() != null ? usersUpdateDto.getAddressLine2() :"";
+                to = usersUpdateDto.getAddressLine2() != null ? usersUpdateDto.getAddressLine2() : "";
 
                 UsersAudit auditHistory = createAuditHistory(Constants.ADDRESS_LINE_2, Constants.USER, from, to, updatedBy);
                 auditList.add(auditHistory);
@@ -328,7 +333,7 @@ public class UsersServiceImpl implements UsersService {
             if (usersUpdateDto.getCity() == null || usersUpdateDto.getCity().isEmpty()) {
                 errorStructure = new ErrorStructure(usersUpdateDto.getCity(), Constants.CITY_SHOULD_NOT_BE_EMPTY, Constants.CITY);
                 errors.add(errorStructure);
-            } else if (!usersUpdateDto.getCity().equals(addressInformation.getCity())){
+            } else if (!usersUpdateDto.getCity().equals(addressInformation.getCity())) {
 
                 var newCityDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getCity()))
                         .orElseThrow(() -> new NoSuchElementException("City not found"));
@@ -348,7 +353,7 @@ public class UsersServiceImpl implements UsersService {
             if (usersUpdateDto.getState() == null || usersUpdateDto.getState().isEmpty()) {
                 errorStructure = new ErrorStructure(usersUpdateDto.getState(), Constants.STATE_SHOULD_NOT_BE_EMPTY, Constants.STATE);
                 errors.add(errorStructure);
-            } else if (!usersUpdateDto.getState().equals(addressInformation.getState())){
+            } else if (!usersUpdateDto.getState().equals(addressInformation.getState())) {
                 var newStateDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getState()))
                         .orElseThrow((() -> new NoSuchElementException("State Not found")));
 
@@ -367,7 +372,7 @@ public class UsersServiceImpl implements UsersService {
             if (usersUpdateDto.getCountry() == null || usersUpdateDto.getCountry().isEmpty()) {
                 errorStructure = new ErrorStructure(usersUpdateDto.getCountry(), Constants.COUNTRY_SHOULD_NOT_BE_EMPTY, Constants.COUNTRY);
                 errors.add(errorStructure);
-            } else if (!usersUpdateDto.getCountry().equals(addressInformation.getCountry())){
+            } else if (!usersUpdateDto.getCountry().equals(addressInformation.getCountry())) {
                 var newCountryDoc = cityStateLocationRepository.findById(new ObjectId(usersUpdateDto.getCountry()))
                         .orElseThrow((() -> new NoSuchElementException("Country Not found")));
 
@@ -383,7 +388,7 @@ public class UsersServiceImpl implements UsersService {
                 addressInformation.setState(usersUpdateDto.getCountry());
             }
 
-            if (!Integer.valueOf(usersUpdateDto.getPinCode()).equals(addressInformation.getPinCode())){
+            if (!Integer.valueOf(usersUpdateDto.getPinCode()).equals(addressInformation.getPinCode())) {
 
                 from = addressInformation.getPinCode() != null ? String.valueOf(addressInformation.getPinCode()) : "";
                 to = usersUpdateDto.getPinCode() != null ? usersUpdateDto.getPinCode() : "";
@@ -400,27 +405,27 @@ public class UsersServiceImpl implements UsersService {
             erpUser.setUpdatedAt(new Date());
             userModel.setUpdatedAt(new Date());
 
-            if (!errors.isEmpty()){
-                response = new ResponseDTO(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),Constants.UNABLE_TO_UPDATE_USER);
+            if (!errors.isEmpty()) {
+                response = new ResponseDTO(Boolean.FALSE, HttpStatus.BAD_REQUEST.value(), Constants.UNABLE_TO_UPDATE_USER);
                 httpStatus = HttpStatus.BAD_REQUEST;
-                return new ResponseEntity<>(response,httpStatus);
+                return new ResponseEntity<>(response, httpStatus);
             }
 
             usersRepository.save(erpUser);
 
             userModelRepository.save(userModel);
 
-            response = new ResponseDTO(Boolean.TRUE,Constants.UPDATED_SUCCESS,HttpStatus.OK.value(),Constants.SUCCESS);
+            response = new ResponseDTO(Boolean.TRUE, Constants.UPDATED_SUCCESS, HttpStatus.OK.value(), Constants.SUCCESS);
             httpStatus = HttpStatus.OK;
 
         } catch (Exception e) {
-            log.error(Constants.UNABLE_TO_UPDATE_USER,e);
+            log.error(Constants.UNABLE_TO_UPDATE_USER, e);
 
-            response = new ResponseDTO(Boolean.FALSE,HttpStatus.UNPROCESSABLE_ENTITY.value(),Constants.UNABLE_TO_UPDATE_USER);
+            response = new ResponseDTO(Boolean.FALSE, HttpStatus.UNPROCESSABLE_ENTITY.value(), Constants.UNABLE_TO_UPDATE_USER);
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         }
 
-        return new ResponseEntity<>(response,httpStatus);
+        return new ResponseEntity<>(response, httpStatus);
     }
 
     @Override
@@ -434,7 +439,6 @@ public class UsersServiceImpl implements UsersService {
             ErrorStructure errorStructure;
             var errors = new ArrayList<>();
 
-
             UserModel userModel = userModelRepository.findById(additionalDetailsDto.getId())
                     .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_ID_USER_NOT_FOUND));
 
@@ -444,28 +448,28 @@ public class UsersServiceImpl implements UsersService {
 
             AdditionalDetails additionalDetails = userModel.getAdditionalDetails();
 
-            if (additionalDetails == null){
+            if (additionalDetails == null) {
                 additionalDetails = new AdditionalDetails();
             }
 
             JobModel jobModel = new JobModel();
 
-            if (additionalDetailsDto.getDesignation() == null || additionalDetailsDto.getDesignation().isEmpty()){
-                errorStructure = new ErrorStructure(additionalDetailsDto.getDesignation(), Constants.DESIGNATION_SHOULD_NOT_BE_EMPTY,Constants.DESIGNATION);
+            if (additionalDetailsDto.getDesignation() == null || additionalDetailsDto.getDesignation().isEmpty()) {
+                errorStructure = new ErrorStructure(additionalDetailsDto.getDesignation(), Constants.DESIGNATION_SHOULD_NOT_BE_EMPTY, Constants.DESIGNATION);
                 errors.add(errorStructure);
             } else {
                 jobModel.setDesignation(additionalDetailsDto.getDesignation());
             }
 
-            if (additionalDetailsDto.getJoiningDate() == null || String.valueOf(additionalDetailsDto.getJoiningDate()).isEmpty()){
-                errorStructure = new ErrorStructure(String.valueOf(additionalDetailsDto.getJoiningDate()), Constants.JOINING_DATE_SHOULD_NOT_BE_EMPTY,Constants.JOINING_DATE);
+            if (additionalDetailsDto.getJoiningDate() == null || String.valueOf(additionalDetailsDto.getJoiningDate()).isEmpty()) {
+                errorStructure = new ErrorStructure(String.valueOf(additionalDetailsDto.getJoiningDate()), Constants.JOINING_DATE_SHOULD_NOT_BE_EMPTY, Constants.JOINING_DATE);
                 errors.add(errorStructure);
             } else {
                 jobModel.setJoiningDate(additionalDetailsDto.getJoiningDate());
             }
 
-            if (additionalDetailsDto.getEmploymentType() == null || additionalDetailsDto.getEmploymentType().isEmpty()){
-                errorStructure = new ErrorStructure(additionalDetailsDto.getEmploymentType(),Constants.EMPLOYEE_TYPE_SHOULD_NOT_BE_EMPTY,Constants.EMPLOYEE_TYPE);
+            if (additionalDetailsDto.getEmploymentType() == null || additionalDetailsDto.getEmploymentType().isEmpty()) {
+                errorStructure = new ErrorStructure(additionalDetailsDto.getEmploymentType(), Constants.EMPLOYEE_TYPE_SHOULD_NOT_BE_EMPTY, Constants.EMPLOYEE_TYPE);
                 errors.add(errorStructure);
             } else {
                 jobModel.setEmploymentType(additionalDetailsDto.getEmploymentType());
@@ -473,8 +477,8 @@ public class UsersServiceImpl implements UsersService {
 
             additionalDetails.setJobDetails(jobModel);
 
-            if (additionalDetailsDto.getSkills() == null || additionalDetailsDto.getSkills().isEmpty()){
-                errorStructure = new ErrorStructure(List.of().toString(),Constants.SKILLS_SHOULD_NOT_BE_EMPTY,Constants.SKILLS);
+            if (additionalDetailsDto.getSkills() == null || additionalDetailsDto.getSkills().isEmpty()) {
+                errorStructure = new ErrorStructure(List.of().toString(), Constants.SKILLS_SHOULD_NOT_BE_EMPTY, Constants.SKILLS);
                 errors.add(errorStructure);
             } else {
                 additionalDetails.setSkills(additionalDetailsDto.getSkills());
@@ -484,17 +488,65 @@ public class UsersServiceImpl implements UsersService {
 
             additionalDetails.setCertifications(additionalDetailsDto.getCertifications());
 
-            if (additionalDetailsDto.getSalary() == null || additionalDetailsDto.getSalary().isEmpty()){
-                errorStructure = new ErrorStructure(additionalDetailsDto.getSalary(), Constants.SALARY_MESSAGE,Constants.SALARY);
+            if (additionalDetailsDto.getSalary() == null || additionalDetailsDto.getSalary().isEmpty()) {
+                errorStructure = new ErrorStructure(additionalDetailsDto.getSalary(), Constants.SALARY_MESSAGE, Constants.SALARY);
                 errors.add(errorStructure);
             } else {
                 salary.setSalary(Double.valueOf(additionalDetailsDto.getSalary()));
             }
 
+            salary.setSalaryType(additionalDetailsDto.getSalaryType());
+
+            if (additionalDetailsDto.getBankAccountNumber() == null || additionalDetailsDto.getBankAccountNumber().isEmpty()) {
+                errorStructure = new ErrorStructure(additionalDetailsDto.getBankAccountNumber(), Constants.BANK_NUMBER_MESSAGE, Constants.BANK_NUMBER);
+                errors.add(errorStructure);
+            } else if (additionalDetailsDto.getBankAccountNumber().length() < 9) {
+                errorStructure = new ErrorStructure(additionalDetailsDto.getBankAccountNumber(),Constants.BANK_NUMBER_MESSAGE_MIN_LENGTH,Constants.BANK_NUMBER);
+                errors.add(errorStructure);
+            } else {
+                salary.setBankAccountNumber(additionalDetailsDto.getBankAccountNumber());
+            }
+
+            if (additionalDetailsDto.getIfscCode() == null || additionalDetailsDto.getIfscCode().isEmpty()){
+                errorStructure = new ErrorStructure(additionalDetailsDto.getIfscCode(), Constants.IFSC_CODE_SHOULD_NOT_BE_EMPTY,Constants.IFSC_CODE);
+                errors.add(errorStructure);
+            } else if (additionalDetailsDto.getIfscCode().length() != 11 || !Constants.PATTERN_IFSC.matcher(additionalDetailsDto.getIfscCode()).matches()){
+                errorStructure = new ErrorStructure(additionalDetailsDto.getIfscCode(), Constants.INVALID_IFSC,Constants.IFSC_CODE);
+                errors.add(errorStructure);
+            } else {
+                salary.setIfscCode(additionalDetailsDto.getIfscCode());
+            }
+
+            salary.setPfNumber(additionalDetailsDto.getPfNumber());
+
+            if (!errors.isEmpty()){
+                response = new ResponseDTO(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),Constants.UNABLE_TO_VALIDATE_DATA);
+                httpStatus = HttpStatus.BAD_REQUEST;
+                return new ResponseEntity<>(response,httpStatus);
+            }
+
+            Salary save = salaryRepository.save(salary);
+
+            userModel.setAdditionalDetails(additionalDetails);
+
+            erpUser.setSalaryId(save.getId());
+
+            erpUser.setDepartmentId(Integer.valueOf(additionalDetailsDto.getDepartmentId()));
+
+            userModelRepository.save(userModel);
+
+            usersRepository.save(erpUser);
+
+            response = new ResponseDTO(Boolean.TRUE,Constants.ADDITIONAL_DETAILS_ADDED,HttpStatus.OK.value(), Constants.SUCCESS);
+            httpStatus = HttpStatus.OK;
+
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error(Constants.UNABLE_TO_VALIDATE_DATA,e);
+
+            response = new ResponseDTO(Boolean.FALSE,HttpStatus.UNPROCESSABLE_ENTITY.value(),Constants.UNABLE_TO_VALIDATE_DATA);
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         }
-        return null;
+        return new ResponseEntity<>(response,httpStatus);
     }
 
     @Override
@@ -537,7 +589,7 @@ public class UsersServiceImpl implements UsersService {
         return "Success";
     }
 
-    protected UsersAudit createAuditHistory(String param,String type, String from, String to, String updatedBy) {
+    protected UsersAudit createAuditHistory(String param, String type, String from, String to, String updatedBy) {
 
         UsersAudit usersAudit = new UsersAudit();
 
