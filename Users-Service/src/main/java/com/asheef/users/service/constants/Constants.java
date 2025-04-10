@@ -83,4 +83,24 @@ public class Constants {
     public static final String UNABLE_TO_UPDATE_USER = "Unable to update user";
 
     public static final String UPDATED_SUCCESS = "Updated Successfully!!";
+
+    public static final String DESIGNATION_SHOULD_NOT_BE_EMPTY = "Designation should not be null";
+
+    public static final String DESIGNATION = "designation";
+
+    public static final String JOINING_DATE_SHOULD_NOT_BE_EMPTY = "Joining date should not be empty";
+
+    public static final String JOINING_DATE = "joiningDate";
+
+    public static final String EMPLOYEE_TYPE_SHOULD_NOT_BE_EMPTY = "Employee type should not be null";
+
+    public static final String EMPLOYEE_TYPE = "employeeType";
+
+    public static final String SKILLS_SHOULD_NOT_BE_EMPTY = "Skills should not be null";
+
+    public static final String SKILLS = "skills";
+
+    public static final String SALARY_MESSAGE = "Salary should not be Empty";
+
+    public static final String SALARY = "salary";
 }

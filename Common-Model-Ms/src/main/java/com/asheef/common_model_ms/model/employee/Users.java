@@ -35,9 +35,6 @@ public class Users {
 
     private String gender;
 
-    @Column(name = "job_id")
-    private Integer jobId;
-
     @Column(name = "address_line_1")
     private String addressLine1;
 
@@ -55,6 +52,12 @@ public class Users {
 
     @Column(name = "pin_code")
     private Integer pinCode;
+
+    @Column(name = "department_id")
+    private Integer departmentId;
+
+    @Column(name = "salary_id")
+    private Integer salaryId;
 
     @Column(name = "created_at")
     private Date createdAt;

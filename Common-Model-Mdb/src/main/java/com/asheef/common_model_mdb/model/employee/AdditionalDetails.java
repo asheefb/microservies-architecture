@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.FieldType;
 
-import javax.persistence.Column;
 import java.util.List;
 
 @Setter
@@ -22,13 +20,13 @@ public class AdditionalDetails {
     private List<String> skills;
 
     @Field(value = "education_details")
-    private EducationDetails educationDetails;
+    private List<EducationDetails> educationDetails;
 
     @Field(value = "experience_years")
     private Integer experienceYears;
 
     private List<String> certifications;
 
-    @Field(value = "salary_details")
-    private Salary salaryDetails;
+//    @Field(value = "salary_details")
+//    private Salary salaryDetails;
 }

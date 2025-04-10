@@ -1,28 +1,35 @@
-package com.asheef.common_model_mdb.model.employee;
+package com.asheef.common_model_ms.model.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.mongodb.core.mapping.Field;
+
+import javax.persistence.*;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Salary {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     private Double salary;
 
-    @Field(value = "salary_type")
+    @Column(name = "salary_type")
     private String salaryType;
 
-    @Field(value = "bank_account_number")
+    @Column(name = "bank_account_number")
     private String bankAccountNumber;
 
-    @Field(value = "ifsc_code")
+    @Column(name = "ifsc_code")
     private String ifscCode;
 
-    @Field(value = "pf_number")
+    @Column(name = "pf_number")
     private String pfNumber;
 }
+
