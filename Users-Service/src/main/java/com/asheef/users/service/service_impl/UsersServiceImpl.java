@@ -13,10 +13,7 @@ import com.asheef.common_model_ms.repository.LocationRepository;
 import com.asheef.common_model_ms.repository.SalaryRepository;
 import com.asheef.common_model_ms.repository.UsersRepository;
 import com.asheef.users.service.constants.Constants;
-import com.asheef.users.service.dto.AdditionalDetailsDto;
-import com.asheef.users.service.dto.CityStateLocationDto;
-import com.asheef.users.service.dto.UsersDto;
-import com.asheef.users.service.dto.UsersUpdateDto;
+import com.asheef.users.service.dto.*;
 import com.asheef.users.service.service.UsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -548,6 +545,118 @@ public class UsersServiceImpl implements UsersService {
         }
         return new ResponseEntity<>(response,httpStatus);
     }
+
+    @Override
+    public ResponseEntity<ResponseDTO> updateAdditionalDetails(AdditionDetailsUpdateDto additionDetailsUpdateDto) {
+
+        ResponseDTO response;
+        HttpStatus httpStatus;
+
+        try {
+
+            ErrorStructure errorStructure;
+            var errors = new ArrayList<>();
+
+            UserModel userModel = userModelRepository.findById(additionDetailsUpdateDto.getId())
+                    .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_ID_USER_NOT_FOUND));
+
+            Users erpUser = usersRepository.findById(userModel.getUserId()).get();
+
+            AdditionalDetails additionalDetails = userModel.getAdditionalDetails();
+
+            JobModel jobDetails = additionalDetails.getJobDetails();
+
+            Optional<Salary> salary = salaryRepository.findById(erpUser.getSalaryId());
+
+            if (additionDetailsUpdateDto.getDesignation() == null || additionDetailsUpdateDto.getDesignation().isEmpty()) {
+                errorStructure = new ErrorStructure(additionDetailsUpdateDto.getDesignation(), Constants.DESIGNATION_SHOULD_NOT_BE_EMPTY, Constants.DESIGNATION);
+                errors.add(errorStructure);
+            } else if (!additionDetailsUpdateDto.getDesignation().equals(jobDetails.getDesignation())){
+                jobDetails.setDesignation(additionDetailsUpdateDto.getDesignation());
+            }
+
+            if (additionDetailsUpdateDto.getJoiningDate() == null || String.valueOf(additionDetailsUpdateDto.getJoiningDate()).isEmpty()) {
+                errorStructure = new ErrorStructure(String.valueOf(additionDetailsUpdateDto.getJoiningDate()), Constants.JOINING_DATE_SHOULD_NOT_BE_EMPTY, Constants.JOINING_DATE);
+                errors.add(errorStructure);
+            } else if (!additionDetailsUpdateDto.getJoiningDate().equals(jobDetails.getJoiningDate())){
+                jobDetails.setJoiningDate(additionDetailsUpdateDto.getJoiningDate());
+            }
+
+            if (additionDetailsUpdateDto.getEmploymentType() == null || additionDetailsUpdateDto.getEmploymentType().isEmpty()) {
+                errorStructure = new ErrorStructure(additionDetailsUpdateDto.getEmploymentType(), Constants.EMPLOYEE_TYPE_SHOULD_NOT_BE_EMPTY, Constants.EMPLOYEE_TYPE);
+                errors.add(errorStructure);
+            } else if (!additionDetailsUpdateDto.getEmploymentType().equals(jobDetails.getEmploymentType())){
+                jobDetails.setEmploymentType(additionDetailsUpdateDto.getEmploymentType());
+            }
+
+            additionalDetails.setJobDetails(jobDetails);
+
+            if (additionDetailsUpdateDto.getSkills() == null || additionDetailsUpdateDto.getSkills().isEmpty()) {
+                errorStructure = new ErrorStructure(List.of().toString(), Constants.SKILLS_SHOULD_NOT_BE_EMPTY, Constants.SKILLS);
+                errors.add(errorStructure);
+            } else if (!additionDetailsUpdateDto.getSkills().equals(additionalDetails.getSkills())){
+                additionalDetails.setSkills(additionDetailsUpdateDto.getSkills());
+            }
+
+            if (!additionDetailsUpdateDto.getExperienceYears().equals(additionalDetails.getExperienceYears().toString()))
+                additionalDetails.setExperienceYears(Integer.valueOf(additionDetailsUpdateDto.getExperienceYears()));
+
+            if (!additionDetailsUpdateDto.getCertifications().equals(additionalDetails.getCertifications()))
+                additionalDetails.setCertifications(additionDetailsUpdateDto.getCertifications());
+
+            if (salary.isPresent()) {
+
+                Salary salaryDetails = salary.get();
+
+                if (additionDetailsUpdateDto.getSalary() == null || additionDetailsUpdateDto.getSalary().isEmpty()) {
+                    errorStructure = new ErrorStructure(additionDetailsUpdateDto.getSalary(), Constants.SALARY_MESSAGE, Constants.SALARY);
+                    errors.add(errorStructure);
+                } else if (!additionDetailsUpdateDto.getSalary().equals(salaryDetails.getSalary().toString())){
+                    salaryDetails.setSalary(Double.valueOf(additionDetailsUpdateDto.getSalary()));
+                }
+
+                if (!additionDetailsUpdateDto.getSalaryType().equals(salaryDetails.getSalaryType()))
+                    salaryDetails.setSalaryType(additionDetailsUpdateDto.getSalaryType());
+
+                if (additionDetailsUpdateDto.getBankAccountNumber() == null || additionDetailsUpdateDto.getBankAccountNumber().isEmpty()) {
+                    errorStructure = new ErrorStructure(additionDetailsUpdateDto.getBankAccountNumber(), Constants.BANK_NUMBER_MESSAGE, Constants.BANK_NUMBER);
+                    errors.add(errorStructure);
+                } else if (additionDetailsUpdateDto.getBankAccountNumber().length() < 9) {
+                    errorStructure = new ErrorStructure(additionDetailsUpdateDto.getBankAccountNumber(), Constants.BANK_NUMBER_MESSAGE_MIN_LENGTH, Constants.BANK_NUMBER);
+                    errors.add(errorStructure);
+                } else if (additionDetailsUpdateDto.getBankAccountNumber().equals(salaryDetails.getBankAccountNumber())){
+                    salaryDetails.setBankAccountNumber(additionDetailsUpdateDto.getBankAccountNumber());
+                }
+
+                if (additionDetailsUpdateDto.getIfscCode() == null || additionDetailsUpdateDto.getIfscCode().isEmpty()) {
+                    errorStructure = new ErrorStructure(additionDetailsUpdateDto.getIfscCode(), Constants.IFSC_CODE_SHOULD_NOT_BE_EMPTY, Constants.IFSC_CODE);
+                    errors.add(errorStructure);
+                } else if (additionDetailsUpdateDto.getIfscCode().length() != 11 || !Constants.PATTERN_IFSC.matcher(additionDetailsUpdateDto.getIfscCode()).matches()) {
+                    errorStructure = new ErrorStructure(additionDetailsUpdateDto.getIfscCode(), Constants.INVALID_IFSC, Constants.IFSC_CODE);
+                    errors.add(errorStructure);
+                } else if (!additionDetailsUpdateDto.getIfscCode().equals(salaryDetails.getIfscCode())){
+                    salaryDetails.setIfscCode(additionDetailsUpdateDto.getIfscCode());
+                }
+
+                if (!additionDetailsUpdateDto.getPfNumber().equals(salaryDetails.getPfNumber()))
+                    salaryDetails.setPfNumber(additionDetailsUpdateDto.getPfNumber());
+
+            }
+            if (!errors.isEmpty()){
+                response = new ResponseDTO(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),Constants.UNABLE_TO_VALIDATE_DATA);
+                httpStatus = HttpStatus.BAD_REQUEST;
+                return new ResponseEntity<>(response,httpStatus);
+            }
+
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return null;
+    }
+
 
     @Override
     public String addLocation(List<CityStateLocationDto> cityStateLocations) {
