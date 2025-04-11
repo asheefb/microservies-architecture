@@ -22,8 +22,6 @@ public class AdditionDetailsUpdateDto {
 
     private String employmentType;
 
-    private String status;
-
     private List<String> skills;
 
     private String experienceYears;
