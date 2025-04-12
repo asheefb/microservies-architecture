@@ -568,6 +568,8 @@ public class UsersServiceImpl implements UsersService {
 
             Optional<Salary> salary = salaryRepository.findById(erpUser.getSalaryId());
 
+            Salary salaryDetails = null;
+
             if (additionDetailsUpdateDto.getDesignation() == null || additionDetailsUpdateDto.getDesignation().isEmpty()) {
                 errorStructure = new ErrorStructure(additionDetailsUpdateDto.getDesignation(), Constants.DESIGNATION_SHOULD_NOT_BE_EMPTY, Constants.DESIGNATION);
                 errors.add(errorStructure);
@@ -606,7 +608,7 @@ public class UsersServiceImpl implements UsersService {
 
             if (salary.isPresent()) {
 
-                Salary salaryDetails = salary.get();
+                salaryDetails = salary.get();
 
                 if (additionDetailsUpdateDto.getSalary() == null || additionDetailsUpdateDto.getSalary().isEmpty()) {
                     errorStructure = new ErrorStructure(additionDetailsUpdateDto.getSalary(), Constants.SALARY_MESSAGE, Constants.SALARY);
@@ -640,21 +642,33 @@ public class UsersServiceImpl implements UsersService {
 
                 if (!additionDetailsUpdateDto.getPfNumber().equals(salaryDetails.getPfNumber()))
                     salaryDetails.setPfNumber(additionDetailsUpdateDto.getPfNumber());
-
             }
+
+            userModel.setAdditionalDetails(additionalDetails);
+
             if (!errors.isEmpty()){
-                response = new ResponseDTO(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),Constants.UNABLE_TO_VALIDATE_DATA);
+                response = new ResponseDTO(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),Constants.UNABLE_TO_UPDATE_DATA);
                 httpStatus = HttpStatus.BAD_REQUEST;
                 return new ResponseEntity<>(response,httpStatus);
             }
 
+            if (salaryDetails != null)
+                salaryRepository.save(salaryDetails);
+
+            userModelRepository.save(userModel);
+
+            usersRepository.save(erpUser);
+
+            response = new ResponseDTO(Boolean.TRUE,Constants.UPDATED_SUCCESS,HttpStatus.OK.value(), Constants.SUCCESS);
+            httpStatus = HttpStatus.OK;
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error(Constants.UNABLE_TO_UPDATE_DATA);
+
+            response = new ResponseDTO(Boolean.FALSE,HttpStatus.UNPROCESSABLE_ENTITY.value(),Constants.UNABLE_TO_UPDATE_DATA);
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         }
-
-
-        return null;
+        return new ResponseEntity<>(response,httpStatus);
     }
 
 
