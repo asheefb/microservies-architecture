@@ -115,6 +115,10 @@ public class Constants {
     public static final String INVALID_IFSC = "Ifsc Code is not valid";
     public static final Object ADDITIONAL_DETAILS_ADDED = "Additional Details added Successfully!!";
     public static final String UNABLE_TO_UPDATE_DATA = "Unable to update data";
+    public static final String ID_SHOULD_NOT_BE_EMPTY = "Id should not be empty";
+    public static final String ID = "id";
+    public static final String EDUCATION_DETAILS = "Education Details";
+    public static final String EDUCATION_DETAILS_REACHED_MAX_LIMIT = "Education Details reached Max Limit";
 
     public static String BANK_NUMBER_MESSAGE_MIN_LENGTH = "Account number should not be less than 9 digits";
 

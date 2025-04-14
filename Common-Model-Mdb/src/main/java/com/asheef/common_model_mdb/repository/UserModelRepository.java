@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserModelRepository extends MongoRepository<UserModel,String> {
+public interface UserModelRepository extends MongoRepository<UserModel,Object> {
 
     @Query("{firstName:?0}")
     Optional<UserModel> findByName(String firstName);

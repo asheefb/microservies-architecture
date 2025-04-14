@@ -5,6 +5,7 @@ import com.asheef.common_model_mdb.model.employee.*;
 import com.asheef.common_model_mdb.model.utils.ErrorStructure;
 import com.asheef.common_model_mdb.model.utils.ResponseDTO;
 import com.asheef.common_model_mdb.repository.CityStateLocationRepository;
+import com.asheef.common_model_mdb.repository.UserAuditRepository;
 import com.asheef.common_model_mdb.repository.UserModelRepository;
 import com.asheef.common_model_ms.model.Location;
 import com.asheef.common_model_ms.model.employee.Salary;
@@ -43,12 +44,16 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     private final SalaryRepository salaryRepository;
 
-    public UsersServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository, SalaryRepository salaryRepository) {
+    @Autowired
+    private final UserAuditRepository userAuditRepository;
+
+    public UsersServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository, SalaryRepository salaryRepository, UserAuditRepository userAuditRepository) {
         this.userModelRepository = userModelRepository;
         this.usersRepository = usersRepository;
         this.cityStateLocationRepository = cityStateLocationRepository;
         this.locationRepository = locationRepository;
         this.salaryRepository = salaryRepository;
+        this.userAuditRepository = userAuditRepository;
     }
 
     @Override
@@ -207,9 +212,14 @@ public class UsersServiceImpl implements UsersService {
             ErrorStructure errorStructure;
             var errors = new ArrayList<>();
 
-            var auditList = new ArrayList<>();
+            List<UsersAudit> auditList = new ArrayList<>();
 
-            UserModel userModel = userModelRepository.findById(usersUpdateDto.getId())
+            if (usersUpdateDto.getId() == null || usersUpdateDto.getId().isEmpty()){
+                errorStructure = new ErrorStructure(usersUpdateDto.getId(),Constants.ID_SHOULD_NOT_BE_EMPTY,Constants.ID);
+                errors.add(errorStructure);
+            }
+
+            UserModel userModel = userModelRepository.findById(new ObjectId(usersUpdateDto.getId()))
                     .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_ID_USER_NOT_FOUND));
 
             Users erpUser = usersRepository.findById(userModel.getUserId())
@@ -408,6 +418,10 @@ public class UsersServiceImpl implements UsersService {
                 return new ResponseEntity<>(response, httpStatus);
             }
 
+            if (!auditList.isEmpty()){
+                userAuditRepository.saveAll(auditList);
+            }
+
             usersRepository.save(erpUser);
 
             userModelRepository.save(userModel);
@@ -557,6 +571,11 @@ public class UsersServiceImpl implements UsersService {
             ErrorStructure errorStructure;
             var errors = new ArrayList<>();
 
+            if (additionDetailsUpdateDto.getId() == null || additionDetailsUpdateDto.getId().isEmpty()){
+                errorStructure = new ErrorStructure(additionDetailsUpdateDto.getId(), Constants.ID_SHOULD_NOT_BE_EMPTY,Constants.ID);
+                errors.add(errorStructure);
+            }
+
             UserModel userModel = userModelRepository.findById(additionDetailsUpdateDto.getId())
                     .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_ID_USER_NOT_FOUND));
 
@@ -669,6 +688,44 @@ public class UsersServiceImpl implements UsersService {
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         }
         return new ResponseEntity<>(response,httpStatus);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> addEducationDetails(EducationDto educationDto) {
+
+        ResponseDTO response;
+        HttpStatus httpStatus;
+
+        try {
+
+            ErrorStructure errorStructure;
+            var errors = new ArrayList<>();
+
+            if (educationDto.getId() == null || educationDto.getId().isEmpty()){
+                errorStructure = new ErrorStructure(educationDto.getId(), Constants.ID_SHOULD_NOT_BE_EMPTY,Constants.ID);
+                errors.add(errorStructure);
+            }
+            UserModel userModel = userModelRepository.findById(educationDto.getId())
+                    .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_ID_USER_NOT_FOUND));
+
+            AdditionalDetails additionalDetails = userModel.getAdditionalDetails();
+
+            if (additionalDetails == null){
+                additionalDetails = new AdditionalDetails();
+            }
+
+            List<EducationDetails> educationDetails = additionalDetails.getEducationDetails();
+
+            if (educationDetails != null && educationDetails.size() > 4) {
+                errorStructure = new ErrorStructure(educationDetails.toString(), Constants.EDUCATION_DETAILS_REACHED_MAX_LIMIT, Constants.EDUCATION_DETAILS);
+                errors.add(errorStructure);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
     }
 
 
