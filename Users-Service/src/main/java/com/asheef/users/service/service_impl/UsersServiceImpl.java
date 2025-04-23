@@ -716,10 +716,28 @@ public class UsersServiceImpl implements UsersService {
 
             List<EducationDetails> educationDetails = additionalDetails.getEducationDetails();
 
+            EducationDetails educationDetail = new EducationDetails();
+
             if (educationDetails != null && educationDetails.size() > 4) {
                 errorStructure = new ErrorStructure(educationDetails.toString(), Constants.EDUCATION_DETAILS_REACHED_MAX_LIMIT, Constants.EDUCATION_DETAILS);
                 errors.add(errorStructure);
             }
+
+            if (educationDto.getEducationLevel() == null || educationDto.getEducationLevel().isEmpty()){
+                errorStructure = new ErrorStructure(educationDto.getEducationLevel(), Constants.EDUCATIONAL_LEVEL_MESSAGE,Constants.EDUCATION_LEVEL);
+                errors.add(errorStructure);
+            } else {
+                if (educationDto.getEducationLevel().equals(Constants.SSLC)) {
+                    if (educationDto.getMedium() != null) {
+                        educationDetail.setMedium(educationDto.getMedium());
+                    }
+                } else {
+                    educationDetail.setStream(educationDto.getStream());
+                }
+                educationDetail.setEducationLevel(educationDto.getEducationLevel());
+            }
+
+
 
         } catch (Exception e) {
             throw new RuntimeException(e);
