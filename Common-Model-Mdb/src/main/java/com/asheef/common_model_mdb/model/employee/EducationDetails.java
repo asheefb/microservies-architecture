@@ -11,22 +11,24 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EducationDetails {
 
-        private String educationLevel;     // e.g., "SSLC", "PUC", "Undergraduate"
+        private String educationLevel;
 
-        private String boardName;          // e.g., "Karnataka State Board", "CBSE"
+        private String boardName;
 
-        private String schoolOrCollegeName;// e.g., "St. Joseph's School"
+        private String university;
 
-        private String location;           // e.g., "Mangalore"
+        private String schoolOrCollegeName;
 
-        private String passOut;        // e.g., "2018"
+        private String location;
 
-        private Double percentage;         // e.g., 92.4
+        private String passOut;
 
-        private String grade;              // e.g., "A+", "First Class"
+        private Double percentage;
 
-        private String medium;             // e.g., "English", "Kannada"
+        private String grade;
 
-        private String stream;             // For PUC: "Science", "Commerce", etc. (can be null for SSLC)
+        private String medium;
+
+        private String stream;
 
 }
