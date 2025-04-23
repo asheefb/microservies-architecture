@@ -119,6 +119,10 @@ public class Constants {
     public static final String ID = "id";
     public static final String EDUCATION_DETAILS = "Education Details";
     public static final String EDUCATION_DETAILS_REACHED_MAX_LIMIT = "Education Details reached Max Limit";
+    public static final String EDUCATIONAL_LEVEL_MESSAGE ="Education Level should not be empty" ;
+    public static final String EDUCATION_LEVEL = "educationLevel";
+    public static final String SSLC = "sslc";
+
 
     public static String BANK_NUMBER_MESSAGE_MIN_LENGTH = "Account number should not be less than 9 digits";
 

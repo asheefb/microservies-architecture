@@ -17,6 +17,8 @@ public class EducationDto {
 
     private String boardName;
 
+    private String university;
+
     private String schoolOrCollegeName;
 
     private String location;
