@@ -3,6 +3,7 @@ package com.asheef.users.service.controller;
 import com.asheef.common_model_mdb.model.utils.ResponseDTO;
 import com.asheef.users.service.dto.*;
 import com.asheef.users.service.service.UsersService;
+import net.bytebuddy.implementation.bind.annotation.Origin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("api/v1/users/")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @CrossOrigin("*")
 public class UsersController {
 
