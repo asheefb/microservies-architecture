@@ -15,7 +15,7 @@ import com.asheef.common_model_ms.repository.SalaryRepository;
 import com.asheef.common_model_ms.repository.UsersRepository;
 import com.asheef.users.service.constants.Constants;
 import com.asheef.users.service.dto.*;
-import com.asheef.users.service.service.UsersService;
+import com.asheef.users.service.service.UserCommandService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class UsersServiceImpl implements UsersService {
+public class UserCommandServiceImpl implements UserCommandService {
 
     @Autowired
     private final UserModelRepository userModelRepository;
@@ -47,7 +47,7 @@ public class UsersServiceImpl implements UsersService {
     @Autowired
     private final UserAuditRepository userAuditRepository;
 
-    public UsersServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository, SalaryRepository salaryRepository, UserAuditRepository userAuditRepository) {
+    public UserCommandServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository, SalaryRepository salaryRepository, UserAuditRepository userAuditRepository) {
         this.userModelRepository = userModelRepository;
         this.usersRepository = usersRepository;
         this.cityStateLocationRepository = cityStateLocationRepository;
@@ -866,6 +866,7 @@ public class UsersServiceImpl implements UsersService {
         UsersAudit usersAudit = new UsersAudit();
 
         usersAudit.setParam(param);
+        usersAudit.setType(type);
         usersAudit.setFrom(from);
         usersAudit.setTo(to);
         usersAudit.setUpdatedBy(updatedBy);
@@ -874,4 +875,6 @@ public class UsersServiceImpl implements UsersService {
 
         return usersAudit;
     }
+
+
 }

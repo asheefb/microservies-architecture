@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface UsersService {
+public interface UserCommandService {
 
     public ResponseEntity<ResponseDTO> addUsers(UsersDto usersDto);
 
