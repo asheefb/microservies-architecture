@@ -18,7 +18,7 @@ public class Constants {
 
     public static final String DUPLICATE_NAME = "Name is Already exist";
 
-    public static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\n";
+    public static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
     public static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
@@ -122,6 +122,20 @@ public class Constants {
     public static final String EDUCATIONAL_LEVEL_MESSAGE ="Education Level should not be empty" ;
     public static final String EDUCATION_LEVEL = "educationLevel";
     public static final String SSLC = "sslc";
+    public static final String BOARD_NAME_MESSAGE = "Board name should not be empty";
+    public static final String BOARD_NAME = "boardName";
+    public static final String SCHOOL_OR_COLLEGE_NAME_SHOULD_NOT_BE_EMPTY = "School or College name should not be empty";
+    public static final String SCHOOL_OR_COLLEGE_NAME = "schoolOrCollegeName";
+    public static final String LOCATION_SHOULD_NOT_BE_EMPTY = "Location should not be empty";
+    public static final String LOCATION = "location";
+    public static final String PASSING_YEAR_SHOULD_NOT_BE_EMPTY = "Passing year should not be empty";
+    public static final String PASSING_YEAR = "passOut";
+    public static final String PERCENTAGE_SHOULD_NOT_BE_EMPTY = "Percentage should not be empty";
+    public static final String PERCENTAGE = "percentage";
+    public static final String EDUCATION_DETAILS_ADDED = "Education Details added Successfully!!";
+    public static final String GRADE_SHOULD_NOT_BE_EMPTY = "Grade should not be empty";
+    public static final String GRADE = "grade";
+    public static final String INVALID_PHONE_USER_NOT_FOUND = "Invalid phone User Not Found";
 
 
     public static String BANK_NUMBER_MESSAGE_MIN_LENGTH = "Account number should not be less than 9 digits";

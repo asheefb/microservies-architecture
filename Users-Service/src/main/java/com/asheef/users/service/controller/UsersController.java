@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/users/")
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
-@CrossOrigin("*")
 public class UsersController {
 
     @Autowired
@@ -47,5 +46,11 @@ public class UsersController {
     public ResponseEntity<ResponseDTO> updateAdditionalDetails(@RequestBody AdditionDetailsUpdateDto additionDetailsUpdateDto){
         return usersService.updateAdditionalDetails(additionDetailsUpdateDto);
     }
+
+    @PostMapping("add/education-details")
+    public ResponseEntity<ResponseDTO> addEducationDetails(@RequestBody EducationDto educationDto){
+        return usersService.addEducationDetails(educationDto);
+    }
+
 
 }

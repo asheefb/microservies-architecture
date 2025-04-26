@@ -19,4 +19,6 @@ public interface UsersService {
     public ResponseEntity<ResponseDTO> updateAdditionalDetails(AdditionDetailsUpdateDto additionDetailsUpdateDto);
 
     public ResponseEntity<ResponseDTO> addEducationDetails(EducationDto educationDto);
+
+    public ResponseEntity<ResponseDTO> getUserByPhone(String phone);
 }
