@@ -27,6 +27,8 @@ public class EducationDto {
 
     private String percentage;
 
+    private String passingYear;
+
     private String grade;
 
     private String medium;

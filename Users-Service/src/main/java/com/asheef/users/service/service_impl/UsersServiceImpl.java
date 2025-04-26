@@ -76,7 +76,7 @@ public class UsersServiceImpl implements UsersService {
             } else if (usersDto.getFirstName().length() < Constants.MIN_VALUE) {
                 errorStructure = new ErrorStructure(usersDto.getFirstName(), Constants.FIRST_NAME_LESS_MESSAGE, Constants.FIRST_NAME);
                 errors.add(errorStructure);
-            } else if (usersDto.getFirstName().equals(userModelRepository.findByName(usersDto.getFirstName()).get().getFirstName())) {
+            } else if (userModelRepository.findByName(usersDto.getFirstName()).isPresent()) {
                 errorStructure = new ErrorStructure(usersDto.getFirstName(), Constants.DUPLICATE_NAME, Constants.FIRST_NAME);
                 errors.add(errorStructure);
             } else {
@@ -90,7 +90,7 @@ public class UsersServiceImpl implements UsersService {
             if (usersDto.getEmail() == null || usersDto.getEmail().isEmpty() || !Constants.EMAIL_PATTERN.matcher(usersDto.getEmail()).matches()) {
                 errorStructure = new ErrorStructure(usersDto.getEmail(), Constants.INVALID_EMAIL, Constants.EMAIL);
                 errors.add(errorStructure);
-            } else if (usersDto.getEmail().equals(usersRepository.findByEmail(usersDto.getEmail()).get().getEmail())) {
+            } else if (usersRepository.findByEmail(usersDto.getEmail()).isPresent()) {
                 errorStructure = new ErrorStructure(usersDto.getEmail(), Constants.EMAIL_ALREADY_EXIST, Constants.EMAIL);
                 errors.add(errorStructure);
             } else {
@@ -101,7 +101,7 @@ public class UsersServiceImpl implements UsersService {
             if (usersDto.getPhoneNumber() == null || usersDto.getPhoneNumber().length() != 10) {
                 errorStructure = new ErrorStructure(usersDto.getPhoneNumber(), Constants.INVALID_PHONE_NUMBER, Constants.PHONE_NUMBER);
                 errors.add(errorStructure);
-            } else if (usersDto.getPhoneNumber().equals(usersRepository.findByPhoneNumber(usersDto.getPhoneNumber()).get().getPhoneNumber())) {
+            } else if (usersRepository.findByPhoneNumber(usersDto.getPhoneNumber()).isPresent()) {
                 errorStructure = new ErrorStructure(usersDto.getPhoneNumber(), Constants.PHONE_NUMBER_ALREADY_EXIST, Constants.PHONE_NUMBER);
                 errors.add(errorStructure);
             } else {
@@ -158,7 +158,7 @@ public class UsersServiceImpl implements UsersService {
                 var countryDoc = cityStateLocationRepository.findById(new ObjectId(usersDto.getCountry()))
                         .orElseThrow((() -> new NoSuchElementException("Country Not found")));
                 user.setCountryId(countryDoc.getErpId());
-                addressInformation.setState(usersDto.getCountry());
+                addressInformation.setCountry(usersDto.getCountry());
             }
 
             user.setPinCode(Integer.valueOf(usersDto.getPinCode()));
@@ -438,6 +438,7 @@ public class UsersServiceImpl implements UsersService {
 
         return new ResponseEntity<>(response, httpStatus);
     }
+
 
     @Override
     public ResponseEntity<ResponseDTO> addAdditionalDetails(AdditionalDetailsDto additionalDetailsDto) {
@@ -731,19 +732,92 @@ public class UsersServiceImpl implements UsersService {
                     if (educationDto.getMedium() != null) {
                         educationDetail.setMedium(educationDto.getMedium());
                     }
+
+                    if (educationDto.getPercentage() == null || educationDto.getPercentage().isEmpty()){
+                        errorStructure = new ErrorStructure(educationDto.getPercentage(), Constants.PERCENTAGE_SHOULD_NOT_BE_EMPTY,Constants.PERCENTAGE);
+                        errors.add(errorStructure);
+                    } else {
+                        educationDetail.setPercentage(Double.valueOf(educationDto.getPercentage()));
+                    }
+
                 } else {
                     educationDetail.setStream(educationDto.getStream());
+
+                    if (educationDto.getGrade() == null || educationDto.getGrade().isEmpty()){
+                        errorStructure = new ErrorStructure(educationDto.getGrade(), Constants.GRADE_SHOULD_NOT_BE_EMPTY,Constants.GRADE);
+                        errors.add(errorStructure);
+                    } else {
+                        educationDetail.setGrade(educationDto.getGrade());
+                    }
                 }
                 educationDetail.setEducationLevel(educationDto.getEducationLevel());
             }
+            educationDetail.setBoardName(educationDto.getBoardName());
 
+            educationDetail.setUniversity(educationDto.getUniversity());
 
+            if (educationDto.getSchoolOrCollegeName() == null || educationDto.getSchoolOrCollegeName().isEmpty()){
+                errorStructure = new ErrorStructure(educationDto.getSchoolOrCollegeName(), Constants.SCHOOL_OR_COLLEGE_NAME_SHOULD_NOT_BE_EMPTY,Constants.SCHOOL_OR_COLLEGE_NAME);
+                errors.add(errorStructure);
+            } else {
+                educationDetail.setSchoolOrCollegeName(educationDto.getSchoolOrCollegeName());
+            }
+
+            if (educationDto.getLocation() == null || educationDto.getLocation().isEmpty()){
+                errorStructure = new ErrorStructure(educationDto.getLocation(), Constants.LOCATION_SHOULD_NOT_BE_EMPTY,Constants.LOCATION);
+                errors.add(errorStructure);
+            } else {
+                educationDetail.setLocation(educationDto.getLocation());
+            }
+
+            if (educationDto.getPassingYear() == null || educationDto.getPassingYear().isEmpty()){
+                errorStructure = new ErrorStructure(educationDto.getPassingYear(), Constants.PASSING_YEAR_SHOULD_NOT_BE_EMPTY,Constants.PASSING_YEAR);
+                errors.add(errorStructure);
+            } else {
+                educationDetail.setPassOut(educationDto.getPassingYear());
+            }
+
+            if (!errors.isEmpty()){
+                response = new ResponseDTO(Boolean.FALSE,HttpStatus.BAD_REQUEST.value(),Constants.UNABLE_TO_UPDATE_DATA);
+                httpStatus = HttpStatus.BAD_REQUEST;
+                return new ResponseEntity<>(response,httpStatus);
+            }
+
+            educationDetails.add(educationDetail);
+
+            additionalDetails.setEducationDetails(educationDetails);
+
+            userModel.setAdditionalDetails(additionalDetails);
+
+            userModelRepository.save(userModel);
+
+            response = new ResponseDTO(Boolean.TRUE,Constants.UPDATED_SUCCESS,HttpStatus.OK.value(), Constants.SUCCESS);
+            httpStatus = HttpStatus.OK;
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+            log.error(Constants.UNABLE_TO_UPDATE_DATA,e);
 
-        return null;
+            response = new ResponseDTO(Boolean.FALSE,HttpStatus.UNPROCESSABLE_ENTITY.value(),Constants.UNABLE_TO_UPDATE_DATA);
+            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+        }
+        return new ResponseEntity<>(response,httpStatus);
+    }
+
+    @Override
+    public ResponseEntity<ResponseDTO> getUserByPhone(String phone) {
+
+        ResponseDTO response;
+        HttpStatus httpStatus;
+
+        try {
+            Users userModel = usersRepository.findByPhoneNumber(phone)
+                    .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_PHONE_USER_NOT_FOUND));
+
+            return new ResponseEntity<>(new ResponseDTO(Boolean.TRUE,userModel,HttpStatus.OK.value(),Constants.SUCCESS),HttpStatus.OK);
+
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(new ResponseDTO(Boolean.FALSE,HttpStatus.UNPROCESSABLE_ENTITY.value(),Constants.INVALID_PHONE_USER_NOT_FOUND),HttpStatus.UNPROCESSABLE_ENTITY);
+        }
     }
 
 
