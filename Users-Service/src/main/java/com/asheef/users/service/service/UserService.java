@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-public interface UserCommandService {
+public interface UserService {
 
     public ResponseEntity<ResponseDTO> addUsers(UsersDto usersDto);
 
@@ -19,6 +19,4 @@ public interface UserCommandService {
     public ResponseEntity<ResponseDTO> updateAdditionalDetails(AdditionDetailsUpdateDto additionDetailsUpdateDto);
 
     public ResponseEntity<ResponseDTO> addEducationDetails(EducationDto educationDto);
-
-    public ResponseEntity<ResponseDTO> getUserByPhone(String phone);
 }

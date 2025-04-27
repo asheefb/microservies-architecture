@@ -136,6 +136,8 @@ public class Constants {
     public static final String GRADE_SHOULD_NOT_BE_EMPTY = "Grade should not be empty";
     public static final String GRADE = "grade";
     public static final String INVALID_PHONE_USER_NOT_FOUND = "Invalid phone User Not Found";
+    public static final String INVALID_ID = "Invalid Id";
+    public static final String INVALID_SEARCH_TEXT = "Minimum 3 characters required for search";
 
 
     public static String BANK_NUMBER_MESSAGE_MIN_LENGTH = "Account number should not be less than 9 digits";
@@ -143,4 +145,35 @@ public class Constants {
     public static String IFSC_REGEX = "^[A-Z]{4}0[A-Z0-9]{6}$";
 
     public static Pattern PATTERN_IFSC = Pattern.compile(IFSC_REGEX);
+
+    //Queries
+    public static final String LOCATION_LOOKUP = " { $lookup: {" +
+            "      from: 'city_state_location'," +
+            "      localField: 'address_info.city'," +
+            "      foreignField: '_id'," +
+            "      as: 'cityDetails'}}";
+
+    public static final String LOCATION_UNWIND = " {\n" +
+            "    $unwind: {\n" +
+            "      path: \"$cityDetails\",\n" +
+            "      preserveNullAndEmptyArrays: true\n" +
+            "    }\n" +
+            "  }";
+
+    public static final String PROJECT = "{\n" +
+            "    $project: {\n" +
+            "      user_id: 1,\n" +
+            "      first_name: 1,\n" +
+            "      last_name: 1,\n" +
+            "      email: 1,\n" +
+            "      phone_number: 1,\n" +
+            "      addressLine1:\n" +
+            "        \"$address_info.address_line_1\",\n" +
+            "      addressLine2:\n" +
+            "        \"$address_info.address_line_2\",\n" +
+            "      cityName: \"$cityDetails.city_name\",\n" +
+            "      stateName: \"$cityDetails.state_name\",\n" +
+            "      countryName: \"$cityDetails.country_name\"\n" +
+            "    }\n" +
+            "  }";
 }
