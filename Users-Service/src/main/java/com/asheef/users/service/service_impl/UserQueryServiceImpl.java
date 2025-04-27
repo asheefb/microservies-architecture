@@ -11,6 +11,8 @@ import com.asheef.common_model_ms.model.employee.Users;
 import com.asheef.common_model_ms.repository.UsersRepository;
 import com.asheef.users.service.constants.Constants;
 import com.asheef.users.service.service.UserQueryService;
+import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -20,9 +22,11 @@ import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
-
+@Service
+@Slf4j
 public class UserQueryServiceImpl implements UserQueryService {
 
     @Autowired
@@ -73,6 +77,7 @@ public class UserQueryServiceImpl implements UserQueryService {
                 return new ResponseEntity<>(response,httpStatus);
             }
 
+            Optional<UserResponseModel> userBasicDetailsById = userModelRepository.findUserBasicDetailsById(new ObjectId(id));
 
 
         } catch (Exception e) {
@@ -101,17 +106,15 @@ public class UserQueryServiceImpl implements UserQueryService {
 
             pageNo -= 1;
 
-            StringBuilder stringQuery = new StringBuilder();
-
+            Criteria criteria;
             if (searchText == null || searchText.isEmpty()) {
-                stringQuery.append("\"\"");
+                criteria = new Criteria(); // No filtering if search is empty
             } else {
-                stringQuery.append("/").append(searchText).append("/i");
+                criteria = new Criteria().andOperator(
+                        Criteria.where("first_name").regex(searchText, "i")
+                );
             }
 
-            Criteria criteria = new Criteria().andOperator(
-                    Criteria.where("first_name").regex(stringQuery.toString())
-            );
 
             var skipPage = (pageNo) * pageSize;
 
@@ -137,7 +140,7 @@ public class UserQueryServiceImpl implements UserQueryService {
                                     Fields.field("cityName","$cityDetails.city_name"),
                                     Fields.field("stateName","$cityDetails.state_name"),
                                     Fields.field("countryName","$cityDetails.country_name"),
-                                    Fields.field("pinCode","$address_info.pin_code")
+                                    Fields.field("pinCode","$address_info.pinCode")
                             )
                     ),
                     facetOperation
@@ -158,7 +161,7 @@ public class UserQueryServiceImpl implements UserQueryService {
                 if (!countModels.isEmpty()){
                     Integer count = countModels.get(0).getCount();
 
-                    var paginateData = new CustomPageable<>().getPaginatedData(Collections.singletonList(userResponseModels), pageNo, pageSize, count);
+                    var paginateData = new CustomPageable<UserResponseModel>().getPaginatedData(userResponseModels, pageNo, pageSize, count);
                     response = new ResponseDTO(Boolean.TRUE,paginateData,HttpStatus.OK.value(),Constants.SUCCESS);
                     httpStatus = HttpStatus.OK;
                 } else {
