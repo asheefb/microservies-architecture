@@ -15,7 +15,7 @@ import com.asheef.common_model_ms.repository.SalaryRepository;
 import com.asheef.common_model_ms.repository.UsersRepository;
 import com.asheef.users.service.constants.Constants;
 import com.asheef.users.service.dto.*;
-import com.asheef.users.service.service.UserCommandService;
+import com.asheef.users.service.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class UserCommandServiceImpl implements UserCommandService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private final UserModelRepository userModelRepository;
@@ -47,7 +47,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Autowired
     private final UserAuditRepository userAuditRepository;
 
-    public UserCommandServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository, SalaryRepository salaryRepository, UserAuditRepository userAuditRepository) {
+    public UserServiceImpl(UserModelRepository userModelRepository, UsersRepository usersRepository, CityStateLocationRepository cityStateLocationRepository, LocationRepository locationRepository, SalaryRepository salaryRepository, UserAuditRepository userAuditRepository) {
         this.userModelRepository = userModelRepository;
         this.usersRepository = usersRepository;
         this.cityStateLocationRepository = cityStateLocationRepository;
@@ -801,23 +801,6 @@ public class UserCommandServiceImpl implements UserCommandService {
             httpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
         }
         return new ResponseEntity<>(response,httpStatus);
-    }
-
-    @Override
-    public ResponseEntity<ResponseDTO> getUserByPhone(String phone) {
-
-        ResponseDTO response;
-        HttpStatus httpStatus;
-
-        try {
-            Users userModel = usersRepository.findByPhoneNumber(phone)
-                    .orElseThrow(() -> new NoSuchElementException(Constants.INVALID_PHONE_USER_NOT_FOUND));
-
-            return new ResponseEntity<>(new ResponseDTO(Boolean.TRUE,userModel,HttpStatus.OK.value(),Constants.SUCCESS),HttpStatus.OK);
-
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(new ResponseDTO(Boolean.FALSE,HttpStatus.UNPROCESSABLE_ENTITY.value(),Constants.INVALID_PHONE_USER_NOT_FOUND),HttpStatus.UNPROCESSABLE_ENTITY);
-        }
     }
 
 
